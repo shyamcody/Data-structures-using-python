@@ -1,0 +1,65 @@
+class node(object):
+    def __init__(self,initdata):
+        self.data = initdata
+        self.left = None
+        self.right = None 
+    
+def findMirrorImage(target, left_node,right_node):
+    """
+    try:
+        print("currently at,",target, left_node.data, right_node.data)
+    except:
+        print("currently at,",target, left_node, right_node)
+    """
+    if left_node ==None or right_node == None :
+        return None
+    if left_node.data == target:
+        #print('huh',right_node.data)
+        return right_node.data
+    if right_node.data == target:
+        #print('huh',left_node.data)
+        return left_node.data
+    
+    mirror_image = findMirrorImage(target, left_node.left, right_node.right)
+    if mirror_image!=None:
+        return mirror_image
+    
+    mirror_image = findMirrorImage(target, left_node.right, right_node.left)
+    return mirror_image 
+        
+
+N,Q = [int(i) for i in input().split(" ")]
+nodelist = {}
+for i in range(N-1):
+    instruction = [k for k in input().split(" ")]
+    parent, child = int(instruction[0]), int(instruction[1])
+    direction = instruction[2]
+    if parent not in nodelist.keys():
+        current_node = node(parent)
+        nodelist[parent] = current_node
+    else:
+        current_node = nodelist[parent]
+    if child not in nodelist.keys():
+        current_child = node(child)
+        nodelist[child] = current_child
+    else:
+        current_child = nodelist[child]
+    if direction == 'R':
+        current_node.right = current_child
+    else:
+        current_node.left = current_child
+for i in range(Q):
+    orig_obj = int(input())
+    root = nodelist[1]
+    if orig_obj==1:
+        print(1)
+    else:
+        ans = findMirrorImage(orig_obj,root.left, root.right)
+        #print(ans)
+        if ans!=None:
+            print(ans)
+        else:
+            print(-1)
+
+#print(root.data,root.left.data,root.right.data,root.left.left.data,root.left.right.data,
+#      root.right.left.data, root.right.right.data)

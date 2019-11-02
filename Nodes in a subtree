@@ -1,0 +1,78 @@
+class node:
+    def __init__(self,character):
+        self.character=character
+        self.children=[]
+
+def findchildren(N,nodelist,target,special_char,edgedict,characters):
+    queue = [target]
+    children_list = []
+    while queue != [] :
+        queue = queue + edgedict[queue[0]]
+        value = queue.pop(0)
+        children_list = children_list + edgedict[value]
+        for key in edgedict[value]:
+            try:
+                edgedict[key].remove(value)
+            except:
+                pass
+    characters_children = [characters[child-1] for child in children_list+[target]]
+    count_char = characters_children.count(special_char)
+    return count_char
+
+params_string=input()
+params_no=[int(no) for no in params_string.split(" ")]
+N,Q=params_no[0],params_no[1]
+characters=list(input())
+net_chars = list(set(characters))
+edgedictionary = {}
+
+for i in range(1,N+1):
+    edgedictionary[i] = []
+rightsides = []
+leftsides = []
+
+for i in range(N-1):
+    edges_string=input()
+    edges_no=[int(no) for no in edges_string.split(" ")]
+    rightsides.append(edges_no[0])
+    leftsides.append(edges_no[1])
+
+def createTree(N,edgedict,characters):
+    #print("weird")
+    nodelist =[0]*N
+    #print(nodelist)
+    queue = [1]
+    while queue != [] :
+        queue = queue + edgedict[queue[0]]
+        value = queue.pop(0)
+        #print(value)
+        curr_node = node(characters[value-1])
+        curr_node.children = edgedict[value]
+        nodelist[value-1] = curr_node
+        for key in edgedict[value]:
+            edgedict[key].remove(value)
+    return nodelist,edgedictionary
+
+for i in range(len(rightsides)):
+    edgedictionary[rightsides[i]].append(leftsides[i])
+    edgedictionary[leftsides[i]].append(rightsides[i])
+
+tree, edgedictionary= createTree(N=N,edgedict=edgedictionary,characters = characters)
+keys = list(edgedictionary.keys())
+leaves =[]
+for key in keys:
+    if edgedictionary[key] == []:
+        leaves.append(key)
+for i in range(Q):
+    list_query=input().split(" ")
+    u,c=int(list_query[0]),list_query[1]
+    if c not in net_chars:
+        print(0)
+    elif u in leaves:
+        if characters[u-1] == c:
+            print(1)
+        else:
+            print(0)
+    else:
+        print(findchildren(N,tree,u,c,edgedictionary,characters))
+
